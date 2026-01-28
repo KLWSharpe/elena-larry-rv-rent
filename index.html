@@ -115,14 +115,14 @@
       );
     }
 
-    function useLucideRefresh(deps=[]) {
-      useEffect(() => {
-        if (window.lucide && typeof window.lucide.createIcons === "function") {
-          window.lucide.createIcons();
-        }
-      // eslint-disable-next-line react-hooks/exhaustive-deps
-      }, deps);
+function useLucideRefresh() {
+  useEffect(() => {
+    if (window.lucide && typeof window.lucide.createIcons === "function") {
+      window.lucide.createIcons();
     }
+  });
+}
+
 
     // --- Component: Smart Image (with Error Handling) ---
     const SmartImage = ({ src, alt, className="", style={}, ...props }) => {
