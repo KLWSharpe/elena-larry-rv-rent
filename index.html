@@ -113,14 +113,14 @@
       );
     }
 
-    function useLucideRefresh(deps = []) {
-      useEffect(() => {
-        if (window.lucide && typeof window.lucide.createIcons === "function") {
-          window.lucide.createIcons();
-        }
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-      }, deps);
+function useLucideRefresh(deps = []) {
+  useEffect(() => {
+    if (window.lucide && typeof window.lucide.createIcons === "function") {
+      window.lucide.createIcons();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, deps);
+}
 
     // -------- Smart Image --------
     const SmartImage = ({ src, alt, className = "", style = {}, ...props }) => {
