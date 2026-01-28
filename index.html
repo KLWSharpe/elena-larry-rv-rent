@@ -24,6 +24,11 @@
         to   { opacity: 1; transform: translateY(0); }
       }
       .animate-fade-in-up { animation: fadeInUp 700ms ease-out both; }
+
+      /* nicer scrollbars (optional) */
+      .nice-scroll::-webkit-scrollbar { width: 10px; }
+      .nice-scroll::-webkit-scrollbar-thumb { background: rgba(0,0,0,.15); border-radius: 999px; }
+      .nice-scroll::-webkit-scrollbar-track { background: transparent; }
     </style>
   </head>
 
@@ -31,12 +36,15 @@
     <div id="root"></div>
 
     <script type="text/babel">
-      const { useState, useEffect, useMemo, useRef } = React;
+      const { useState, useEffect, useMemo, useRef, useCallback } = React;
 
       /**
-       * --- 圖片設定區 (PHOTO LINKS) ---
-       * 你只需要改這些連結即可
+       * ===========================
+       * 1) EDIT THESE SETTINGS ONLY
+       * ===========================
        */
+
+      // Photos (replace with your real URLs)
       const PHOTO_LINKS = {
         exterior: "https://i.imgur.com/7AL3nYz.jpg",
         living: "https://i.imgur.com/eOlPZn9.jpg",
@@ -47,68 +55,104 @@
         theater: "https://i.imgur.com/5Ub2K90.jpg",
         rear: "https://i.imgur.com/V1AmKtM.jpg",
 
-        // ★★★ 請將你正確的「空中俯瞰配置圖」連結貼在這裡 ★★★
-        floorplan: "https://placehold.co/1200x420/EEE/31343C.png?text=Paste+Your+Floorplan+Link+Here"
+        // IMPORTANT: Replace with your actual overhead floorplan image
+        floorplan: "https://placehold.co/1400x500/EEE/111827.png?text=Paste+Your+Floorplan+Image+URL+Here"
       };
 
+      // Contact / booking
+      const CONTACT = {
+        bookingUrl: "https://example.com/booking",       // <-- put your booking link
+        phoneDisplay: "(123) 456-7890",                  // <-- what you want to show
+        phoneE164: "+11234567890",                       // <-- for tel:
+        email: "your-email@example.com",                 // <-- for mailto:
+        locationShort: "Your City, ST"
+      };
+
+      // RV info (used in hero/spec blocks)
+      const RV_INFO = {
+        name: "Rockwood 8328BS",
+        tagline: "Rear Living • Spacious Kitchen Island • Premium Comfort",
+        badge: "Premium RV Experience"
+      };
+
+      /**
+       * ===========================
+       * 2) ZONES / HOTSPOTS
+       * ===========================
+       */
       const ZONES = {
-        EXTERIOR: { id: "exterior", label: "Exterior", img: PHOTO_LINKS.exterior, desc: "Power Awning & Entry", top: "80%", left: "20%" },
-        LIVING: { id: "living", label: "Living Room", img: PHOTO_LINKS.living, desc: "Rear Living Area", top: "50%", left: "80%" },
-        KITCHEN: { id: "kitchen", label: "Kitchen", img: PHOTO_LINKS.kitchen, desc: "Center Island Kitchen", top: "50%", left: "55%" },
-        BEDROOM: { id: "bedroom", label: "Master Suite", img: PHOTO_LINKS.bedroom, desc: "Front Queen Bed", top: "50%", left: "15%" },
-        BATHROOM: { id: "bathroom", label: "Bathroom", img: PHOTO_LINKS.bathroom, desc: "Pass-through Bath", top: "50%", left: "35%" },
-        OUTDOOR: { id: "outdoor", label: "Outdoor Kitchen", img: PHOTO_LINKS.outdoor_kitchen, desc: "Side Pull-out Kitchen", top: "20%", left: "60%" },
-        THEATER: { id: "theater", label: "Theater Seats", img: PHOTO_LINKS.theater, desc: "Massage & Heat Seating", top: "70%", left: "75%" },
-        REAR: { id: "rear", label: "Rear Profile", img: PHOTO_LINKS.rear, desc: "Rear View", top: "50%", left: "95%" }
+        EXTERIOR: { id: "exterior", label: "Exterior", img: PHOTO_LINKS.exterior, desc: "Power awning & entry", top: "80%", left: "20%" },
+        LIVING: { id: "living", label: "Living Room", img: PHOTO_LINKS.living, desc: "Rear living lounge", top: "50%", left: "80%" },
+        KITCHEN: { id: "kitchen", label: "Kitchen", img: PHOTO_LINKS.kitchen, desc: "Island + residential feel", top: "50%", left: "55%" },
+        BEDROOM: { id: "bedroom", label: "Master Suite", img: PHOTO_LINKS.bedroom, desc: "Queen bed & slide-out space", top: "50%", left: "15%" },
+        BATHROOM: { id: "bathroom", label: "Bathroom", img: PHOTO_LINKS.bathroom, desc: "Pass-through bath", top: "50%", left: "35%" },
+        OUTDOOR: { id: "outdoor", label: "Outdoor Kitchen", img: PHOTO_LINKS.outdoor_kitchen, desc: "Grill + mini-fridge", top: "20%", left: "60%" },
+        THEATER: { id: "theater", label: "Theater Seats", img: PHOTO_LINKS.theater, desc: "Heat + massage seating", top: "70%", left: "75%" },
+        REAR: { id: "rear", label: "Rear Profile", img: PHOTO_LINKS.rear, desc: "Rear view & storage", top: "50%", left: "95%" }
       };
 
+      /**
+       * ===========================
+       * 3) MINI “AI” FAQ RESPONSES
+       * ===========================
+       * (local keyword matching; not an external AI call)
+       */
       const AI_BRAIN = [
         {
           keywords: ["weight", "heavy", "tow", "truck", "hitch", "lbs"],
           response:
-            "Regarding towing the Rockwood 8328BS:\n• Dry Weight (UVW): ~9,000 lbs\n• Hitch Weight: ~1,150 lbs\n• Fully Loaded (GVWR): ~11,000 lbs.\n\nAdvice: You'll generally need a 3/4 ton truck (like an F-250/2500) for safety. A weight-distribution hitch is required."
+            "Towing overview for the Rockwood 8328BS:\n• Dry Weight (UVW): ~9,000 lbs\n• Hitch Weight: ~1,150 lbs\n• GVWR (Fully Loaded): ~11,000 lbs\n\nTip: A 3/4-ton truck (F-250/2500 class) is commonly recommended. Weight-distribution hitch required."
         },
         {
           keywords: ["length", "long", "size", "dimension", "height", "feet"],
           response:
-            "It's a spacious unit!\n• Total Length: 35 feet 5 inches (hitch to bumper)\n• Height: ~13 feet (with A/C)\nAlways check bridge clearances!"
+            "Dimensions:\n• Total Length: 35' 5\" (hitch to bumper)\n• Height: ~13' (with A/C)\nAlways confirm bridge/overhang clearance."
         },
         {
           keywords: ["sleep", "bed", "people", "capacity", "guest"],
           response:
-            "This RV comfortably sleeps 2 people.\n1) Master Suite: Queen mattress\n2) Living Area: Sofa can convert for guests"
+            "Sleeping capacity:\n• Primary: Queen bed in the master suite\n• Guests: Sofa converts for additional sleeping\nBest for 2 adults, with occasional guests."
         },
         {
           keywords: ["tank", "water", "capacity", "fresh", "grey", "black", "gallon"],
           response:
-            "Great capacities for boondocking:\n• Fresh Water: 60 Gallons\n• Grey Water: 108 Gallons\n• Black Water: 45 Gallons"
+            "Tank capacities:\n• Fresh: 60 gal\n• Grey: 108 gal\n• Black: 45 gal\nGreat for longer stays/boondocking."
         },
         {
           keywords: ["slide", "room", "out", "width"],
           response:
-            "This model features 3 slide-outs for maximum space:\n1) Bedroom wardrobe slide\n2) Living room dinette/entertainment slide\n3) Kitchen/Sofa slide\nMake sure you have enough width at your campsite!"
+            "Slide-outs:\n• 3 slide-outs for maximum space\nEnsure your campsite has enough room for slide clearance."
         },
         {
           keywords: ["kitchen", "fridge", "cook", "stove", "oven"],
           response:
-            "The kitchen is a chef's dream: island, large fridge, 3-burner stove, oven, microwave — plus an outdoor kitchen with grill & mini-fridge."
+            "Kitchen highlights:\n• Island layout\n• Large fridge\n• 3-burner stove + oven + microwave\n• Outdoor kitchen: grill & mini-fridge"
         },
         {
           keywords: ["ac", "air", "cool", "heat", "furnace", "temp"],
           response:
-            "Stay comfortable: Dual A/C units (ducted) + 35k BTU furnace. Electric fireplace also provides great heat."
+            "Comfort:\n• Dual A/C (ducted)\n• 35k BTU furnace\n• Electric fireplace provides extra warmth"
         },
         {
           keywords: ["power", "amp", "generator", "electric"],
           response:
-            "This is a 50-amp unit. You need 50-amp service to run both A/C units simultaneously. (Adapter for 30-amp possible, but you'll need to manage power usage.)"
+            "Electrical:\n• 50-amp service\n30-amp adapter may work with reduced usage (not both A/C units simultaneously)."
+        },
+        {
+          keywords: ["price", "cost", "rate", "night", "per night"],
+          response:
+            "Pricing varies by dates/season.\nTap “Request Booking” to check availability and receive a quote."
         }
       ];
 
       const DEFAULT_AI_RESPONSE =
-        "I'm Elena & Larry's virtual assistant. I can answer questions about specs, towing weights, tanks, or amenities. What would you like to know?";
+        "Hi! I’m Elena & Larry’s RV assistant.\nAsk me about towing, dimensions, tanks, slide-outs, power, or amenities.";
 
-      // -------- Lucide helper (CDN) --------
+      /**
+       * ===========================
+       * 4) LUCIDE HELPERS
+       * ===========================
+       */
       function Icon({ name, size = 18, className = "" }) {
         return (
           <i
@@ -119,17 +163,21 @@
         );
       }
 
-      // ✅ 讓 lucide 每次 React render 後都能把 <i data-lucide> 轉成 SVG
       function useLucideRefresh(deps = []) {
         useEffect(() => {
           if (window.lucide && typeof window.lucide.createIcons === "function") {
             window.lucide.createIcons();
           }
+          // We intentionally allow deps injection for re-render timing.
           // eslint-disable-next-line react-hooks/exhaustive-deps
         }, deps);
       }
 
-      // -------- Smart Image --------
+      /**
+       * ===========================
+       * 5) UI PRIMITIVES
+       * ===========================
+       */
       const SmartImage = ({ src, alt, className = "", style = {}, ...props }) => {
         const [error, setError] = useState(false);
 
@@ -147,412 +195,13 @@
             ) : (
               <div className="absolute inset-0 flex flex-col items-center justify-center text-gray-500 p-4 text-center border-2 border-dashed border-red-300 m-2 rounded bg-white/80">
                 <Icon name="image-off" size={32} className="mb-2 text-red-400" />
-                <span className="text-sm font-semibold text-gray-700">Image Error</span>
+                <span className="text-sm font-semibold text-gray-700">Image failed to load</span>
+                <span className="text-xs text-gray-500 mt-1 break-all">{src}</span>
               </div>
             )}
           </div>
         );
       };
 
-      // -------- AI Chat Widget --------
-      const AIChatWidget = () => {
-        const [isOpen, setIsOpen] = useState(false);
-        const [messages, setMessages] = useState([
-          { role: "bot", text: "Hello! I’m the assistant for Elena & Larry’s RV. Ask me about towing, tanks, slides, or amenities." }
-        ]);
-        const [input, setInput] = useState("");
-        const [isTyping, setIsTyping] = useState(false);
-        const chatEndRef = useRef(null);
-
-        useLucideRefresh([isOpen, messages.length, isTyping]);
-
-        useEffect(() => {
-          chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
-        }, [messages, isTyping]);
-
-        const handleSend = () => {
-          if (!input.trim()) return;
-          const userMsg = input.trim();
-          setInput("");
-          setMessages(prev => [...prev, { role: "user", text: userMsg }]);
-          setIsTyping(true);
-
-          setTimeout(() => {
-            let response = DEFAULT_AI_RESPONSE;
-            const lower = userMsg.toLowerCase();
-
-            const matched = AI_BRAIN.find(topic =>
-              topic.keywords.some(k => lower.includes(k))
-            );
-
-            if (matched) response = matched.response;
-            else if (lower.includes("hello") || lower.includes("hi")) response = "Hi there! Ask me anything about the RV.";
-            else if (lower.includes("price") || lower.includes("cost")) response = "Rates typically start around $149/night. Use the booking button to confirm dates!";
-
-            setIsTyping(false);
-            setMessages(prev => [...prev, { role: "bot", text: response }]);
-          }, 800);
-        };
-
-        return (
-          <div className="fixed bottom-6 right-6 z-50 flex flex-col items-end pointer-events-none">
-            {isOpen && (
-              <div className="bg-white w-80 md:w-96 h-[520px] rounded-2xl shadow-2xl mb-4 pointer-events-auto flex flex-col overflow-hidden border border-gray-200 font-sans">
-                <div className="bg-gradient-to-r from-emerald-600 to-teal-600 text-white p-4 flex justify-between items-center">
-                  <div className="flex items-center gap-2">
-                    <Icon name="sparkles" size={18} className="text-yellow-300" />
-                    <div>
-                      <span className="font-bold block text-sm">Elena & Larry’s AI</span>
-                      <span className="text-xs text-emerald-100 flex items-center gap-1">
-                        <Icon name="zap" size={10} /> Rockwood Expert
-                      </span>
-                    </div>
-                  </div>
-                  <button
-                    onClick={() => setIsOpen(false)}
-                    className="hover:bg-white/20 p-1 rounded transition-colors"
-                    aria-label="Close chat"
-                  >
-                    <Icon name="x" size={18} />
-                  </button>
-                </div>
-
-                <div className="flex-1 overflow-y-auto p-4 bg-gray-50 space-y-4">
-                  {messages.map((msg, idx) => (
-                    <div key={idx} className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"}`}>
-                      <div
-                        className={`max-w-[85%] p-3 rounded-2xl text-sm leading-relaxed shadow-sm ${
-                          msg.role === "user"
-                            ? "bg-emerald-600 text-white rounded-br-none"
-                            : "bg-white border border-gray-200 text-gray-800 rounded-bl-none"
-                        }`}
-                      >
-                        {msg.text.split("\n").map((line, i) => (
-                          <p key={i} className={i > 0 ? "mt-2" : ""}>{line}</p>
-                        ))}
-                      </div>
-                    </div>
-                  ))}
-
-                  {isTyping && (
-                    <div className="flex justify-start">
-                      <div className="bg-white border border-gray-200 p-3 rounded-2xl rounded-bl-none shadow-sm flex items-center gap-2">
-                        <div className="flex gap-1">
-                          <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: "0ms" }}></div>
-                          <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: "150ms" }}></div>
-                          <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: "300ms" }}></div>
-                        </div>
-                        <span className="text-xs text-gray-400">AI is thinking...</span>
-                      </div>
-                    </div>
-                  )}
-
-                  <div ref={chatEndRef} />
-                </div>
-
-                <div className="p-3 bg-white border-t border-gray-100 flex gap-2">
-                  <input
-                    type="text"
-                    value={input}
-                    onChange={(e) => setInput(e.target.value)}
-                    onKeyDown={(e) => e.key === "Enter" && handleSend()}
-                    placeholder="Ask about towing, tanks, slides..."
-                    className="flex-1 text-sm border border-gray-300 rounded-full px-4 py-2 focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500"
-                  />
-                  <button
-                    onClick={handleSend}
-                    className="bg-emerald-600 text-white p-2 rounded-full hover:bg-emerald-700 transition-all transform active:scale-95"
-                    aria-label="Send"
-                  >
-                    <Icon name="send" size={18} />
-                  </button>
-                </div>
-              </div>
-            )}
-
-            <button
-              onClick={() => setIsOpen(!isOpen)}
-              className="pointer-events-auto bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white p-4 rounded-full shadow-lg transition-all transform hover:scale-105 flex items-center gap-3 group"
-              aria-label="Toggle chat"
-            >
-              <Icon name="message-square" size={24} className="group-hover:animate-pulse" />
-              <span className={`${isOpen ? "hidden" : "block"} font-medium pr-1`}>Ask AI</span>
-            </button>
-          </div>
-        );
-      };
-
-      // -------- Floor Plan Map --------
-      const FloorPlanMap = ({ activeZoneId, onSelect }) => {
-        useLucideRefresh([activeZoneId]);
-
-        const zones = Object.values(ZONES);
-
-        return (
-          <div className="w-full max-w-5xl mx-auto">
-            <div className="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
-              <div className="p-5 md:p-6 flex items-center justify-between">
-                <div>
-                  <h3 className="text-lg md:text-xl font-bold text-gray-900 flex items-center gap-2">
-                    <Icon name="map" size={18} className="text-emerald-700" />
-                    Interactive Overhead Map
-                  </h3>
-                  <p className="text-sm text-gray-500 mt-1">Click a hotspot to explore photos.</p>
-                </div>
-                <div className="text-xs font-bold text-gray-400 uppercase tracking-widest">
-                  Front → Rear
-                </div>
-              </div>
-
-              <div className="relative">
-                <div className="aspect-[12/4] bg-gray-100">
-                  <SmartImage
-                    src={PHOTO_LINKS.floorplan}
-                    alt="Floorplan"
-                    className="w-full h-full"
-                  />
-                </div>
-
-                {/* Hotspots */}
-                {zones.map((z) => {
-                  const active = z.id === activeZoneId;
-                  return (
-                    <button
-                      key={z.id}
-                      onClick={() => onSelect(z.id)}
-                      className={`absolute -translate-x-1/2 -translate-y-1/2 rounded-full border shadow-sm transition-all ${
-                        active
-                          ? "bg-emerald-600 border-emerald-600 scale-110"
-                          : "bg-white border-gray-300 hover:scale-110"
-                      }`}
-                      style={{ top: z.top, left: z.left }}
-                      aria-label={z.label}
-                      title={z.label}
-                    >
-                      <span className="block w-4 h-4 md:w-5 md:h-5 rounded-full" />
-                    </button>
-                  );
-                })}
-              </div>
-
-              <div className="p-4 md:p-5 border-t border-gray-100 bg-gray-50">
-                <div className="flex flex-wrap gap-2">
-                  {zones.map((z) => {
-                    const active = z.id === activeZoneId;
-                    return (
-                      <button
-                        key={z.id}
-                        onClick={() => onSelect(z.id)}
-                        className={`px-3 py-2 rounded-full text-sm border transition ${
-                          active
-                            ? "bg-emerald-600 text-white border-emerald-600"
-                            : "bg-white text-gray-700 border-gray-200 hover:border-emerald-300"
-                        }`}
-                      >
-                        {z.label}
-                      </button>
-                    );
-                  })}
-                </div>
-              </div>
-            </div>
-          </div>
-        );
-      };
-
-      // -------- Gallery / Details --------
-      const GalleryCard = ({ title, desc, img }) => {
-        useLucideRefresh([title]);
-        return (
-          <div className="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden animate-fade-in-up">
-            <div className="h-48 md:h-56">
-              <SmartImage src={img} alt={title} className="w-full h-full" />
-            </div>
-            <div className="p-4 md:p-5">
-              <div className="flex items-center gap-2">
-                <Icon name="image" size={16} className="text-emerald-700" />
-                <h4 className="font-bold text-gray-900">{title}</h4>
-              </div>
-              <p className="text-sm text-gray-600 mt-2">{desc}</p>
-            </div>
-          </div>
-        );
-      };
-
-      // -------- App --------
-      const App = () => {
-        const zoneList = useMemo(() => Object.values(ZONES), []);
-        const [activeZoneId, setActiveZoneId] = useState(zoneList[0].id);
-
-        const activeZone = zoneList.find(z => z.id === activeZoneId) || zoneList[0];
-        const images = zoneList.map(z => ({ src: z.img, alt: z.desc, label: z.label, id: z.id }));
-
-        useLucideRefresh([activeZoneId]);
-
-        return (
-          <div className="min-h-screen">
-            {/* Top Bar */}
-            <header className="sticky top-0 z-40 bg-white/80 backdrop-blur border-b border-gray-200">
-              <div className="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <div className="w-9 h-9 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 flex items-center justify-center shadow-sm">
-                    <Icon name="caravan" size={20} className="text-white" />
-                  </div>
-                  <div>
-                    <div className="font-extrabold text-gray-900 leading-tight">Elena & Larry RV Rental</div>
-                    <div className="text-xs text-gray-500">Rockwood 8328BS • Rear Living</div>
-                  </div>
-                </div>
-
-                <a
-                  href="#request"
-                  className="inline-flex items-center gap-2 bg-emerald-600 text-white px-4 py-2 rounded-full shadow-sm hover:bg-emerald-700 transition"
-                >
-                  <Icon name="calendar-check" size={16} />
-                  Request Booking
-                </a>
-              </div>
-            </header>
-
-            {/* Hero */}
-            <section className="max-w-6xl mx-auto px-4 pt-8 pb-10">
-              <div className="grid md:grid-cols-2 gap-6 items-center">
-                <div className="animate-fade-in-up">
-                  <div className="inline-flex items-center gap-2 text-xs font-bold tracking-widest uppercase text-emerald-700 bg-emerald-50 border border-emerald-100 px-3 py-2 rounded-full">
-                    <Icon name="sparkles" size={14} />
-                    Premium RV Experience
-                  </div>
-                  <h1 className="text-3xl md:text-5xl font-black text-gray-900 mt-4 leading-tight">
-                    Explore the Rockwood 8328BS
-                  </h1>
-                  <p className="text-gray-600 mt-4 text-base md:text-lg">
-                    Beautiful rear living layout, spacious kitchen island, and comfort features to make your trip unforgettable.
-                    Click the map hotspots to view each area.
-                  </p>
-
-                  <div className="flex flex-wrap gap-3 mt-6">
-                    <button
-                      onClick={() => setActiveZoneId("living")}
-                      className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-gray-200 bg-white hover:border-emerald-300 transition"
-                    >
-                      <Icon name="sofa" size={16} className="text-emerald-700" />
-                      Show Living Room
-                    </button>
-                    <button
-                      onClick={() => setActiveZoneId("kitchen")}
-                      className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-gray-200 bg-white hover:border-emerald-300 transition"
-                    >
-                      <Icon name="utensils" size={16} className="text-emerald-700" />
-                      Show Kitchen
-                    </button>
-                    <button
-                      onClick={() => setActiveZoneId("bedroom")}
-                      className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-gray-200 bg-white hover:border-emerald-300 transition"
-                    >
-                      <Icon name="bed-double" size={16} className="text-emerald-700" />
-                      Show Bedroom
-                    </button>
-                  </div>
-                </div>
-
-                <div className="animate-fade-in-up">
-                  <div className="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
-                    <div className="h-72 md:h-96">
-                      <SmartImage src={activeZone.img} alt={activeZone.desc} className="w-full h-full" />
-                    </div>
-                    <div className="p-4 md:p-5 flex items-start justify-between gap-4">
-                      <div>
-                        <div className="text-sm font-bold text-gray-900 flex items-center gap-2">
-                          <Icon name="pin" size={16} className="text-emerald-700" />
-                          {activeZone.label}
-                        </div>
-                        <div className="text-sm text-gray-600 mt-1">{activeZone.desc}</div>
-                      </div>
-                      <button
-                        onClick={() => setActiveZoneId(zoneList[(zoneList.findIndex(z => z.id === activeZoneId) + 1) % zoneList.length].id)}
-                        className="shrink-0 inline-flex items-center gap-2 px-4 py-2 rounded-full bg-emerald-600 text-white hover:bg-emerald-700 transition"
-                      >
-                        Next
-                        <Icon name="arrow-right" size={16} />
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </section>
-
-            {/* Floorplan */}
-            <section className="px-4 pb-10">
-              <FloorPlanMap activeZoneId={activeZoneId} onSelect={setActiveZoneId} />
-            </section>
-
-            {/* Gallery Grid */}
-            <section className="max-w-6xl mx-auto px-4 pb-16">
-              <div className="flex items-end justify-between gap-4">
-                <div>
-                  <h2 className="text-2xl md:text-3xl font-black text-gray-900">Photo Highlights</h2>
-                  <p className="text-gray-600 mt-2">Quick glance at key areas.</p>
-                </div>
-                <div className="hidden md:flex items-center gap-2 text-sm text-gray-500">
-                  <Icon name="images" size={16} />
-                  {images.length} areas
-                </div>
-              </div>
-
-              <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5 mt-6">
-                {images.map(item => (
-                  <button key={item.id} onClick={() => setActiveZoneId(item.id)} className="text-left">
-                    <GalleryCard title={item.label} desc={item.alt} img={item.src} />
-                  </button>
-                ))}
-              </div>
-
-              <div id="request" className="mt-14 bg-white rounded-2xl border border-gray-200 shadow-sm p-6 md:p-8">
-                <h3 className="text-xl font-black text-gray-900 flex items-center gap-2">
-                  <Icon name="calendar-check" size={18} className="text-emerald-700" />
-                  Request Booking
-                </h3>
-                <p className="text-gray-600 mt-2">
-                  Put your booking link / phone / email here. (你告訴我你要放哪個聯絡方式，我也可以幫你排版得更像正式網站。)
-                </p>
-
-                <div className="mt-5 flex flex-wrap gap-3">
-                  <a
-                    href="mailto:your-email@example.com"
-                    className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-emerald-600 text-white hover:bg-emerald-700 transition"
-                  >
-                    <Icon name="mail" size={16} />
-                    Email Us
-                  </a>
-                  <a
-                    href="tel:+11234567890"
-                    className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-gray-200 bg-white hover:border-emerald-300 transition"
-                  >
-                    <Icon name="phone" size={16} className="text-emerald-700" />
-                    Call
-                  </a>
-                </div>
-              </div>
-            </section>
-
-            <footer className="border-t border-gray-200 bg-white">
-              <div className="max-w-6xl mx-auto px-4 py-8 text-sm text-gray-500 flex flex-wrap items-center justify-between gap-3">
-                <div>© {new Date().getFullYear()} Elena & Larry RV Rental</div>
-                <div className="flex items-center gap-2">
-                  <Icon name="shield-check" size={16} className="text-emerald-700" />
-                  Hosted on GitHub Pages
-                </div>
-              </div>
-            </footer>
-
-            <AIChatWidget />
-          </div>
-        );
-      };
-
-      // ✅ 一定要有這段：把 React 掛載到 #root
-      const root = ReactDOM.createRoot(document.getElementById("root"));
-      root.render(<App />);
-    </script>
-  </body>
-</html>
+      const Pill = ({ icon, children }) => (
+        <span className="inline-flex items-center gap-2 text-xs font-bold tracking-widest upperc
