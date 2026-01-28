@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en">
+<html lang="zh-Hant">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1" />
@@ -25,10 +25,11 @@
       }
       .animate-fade-in-up { animation: fadeInUp 700ms ease-out both; }
 
-      /* nicer scrollbars (optional) */
       .nice-scroll::-webkit-scrollbar { width: 10px; }
       .nice-scroll::-webkit-scrollbar-thumb { background: rgba(0,0,0,.15); border-radius: 999px; }
       .nice-scroll::-webkit-scrollbar-track { background: transparent; }
+
+      html { scroll-behavior: smooth; }
     </style>
   </head>
 
@@ -40,11 +41,10 @@
 
       /**
        * ===========================
-       * 1) EDIT THESE SETTINGS ONLY
+       * 1) 你只需要改這些設定
        * ===========================
        */
 
-      // Photos (replace with your real URLs)
       const PHOTO_LINKS = {
         exterior: "https://i.imgur.com/7AL3nYz.jpg",
         living: "https://i.imgur.com/eOlPZn9.jpg",
@@ -55,24 +55,26 @@
         theater: "https://i.imgur.com/5Ub2K90.jpg",
         rear: "https://i.imgur.com/V1AmKtM.jpg",
 
-        // IMPORTANT: Replace with your actual overhead floorplan image
+        // ★★★ 把你的「空拍/俯視 Floorplan」直接連結貼這裡（jpg/png）★★★
         floorplan: "https://placehold.co/1400x500/EEE/111827.png?text=Paste+Your+Floorplan+Image+URL+Here"
       };
 
-      // Contact / booking
       const CONTACT = {
-        bookingUrl: "https://example.com/booking",       // <-- put your booking link
-        phoneDisplay: "(123) 456-7890",                  // <-- what you want to show
-        phoneE164: "+11234567890",                       // <-- for tel:
-        email: "your-email@example.com",                 // <-- for mailto:
+        bookingUrl: "https://example.com/booking", // ← 換成你的 Book Now/Request Booking 連結
+        phoneDisplay: "(123) 456-7890",
+        phoneE164: "+11234567890",
+        email: "your-email@example.com",
         locationShort: "Your City, ST"
       };
 
-      // RV info (used in hero/spec blocks)
       const RV_INFO = {
-        name: "Rockwood 8328BS",
-        tagline: "Rear Living • Spacious Kitchen Island • Premium Comfort",
-        badge: "Premium RV Experience"
+        yearModel: "2020 Rockwood Signature Ultra Lite 8328BS",
+        brandTitle: "Elena & Larry's ",
+        brandAccent: "Rockwood",
+        heroTitleLine1: "Elena & Larry's",
+        heroTitleLine2: "Luxury RV Rental",
+        heroSubtitle:
+          "Experience the great outdoors with residential comfort. 3 slides, master suite, and outdoor kitchen ready for your next adventure.",
       };
 
       /**
@@ -81,37 +83,31 @@
        * ===========================
        */
       const ZONES = {
-        EXTERIOR: { id: "exterior", label: "Exterior", img: PHOTO_LINKS.exterior, desc: "Power awning & entry", top: "80%", left: "20%" },
-        LIVING: { id: "living", label: "Living Room", img: PHOTO_LINKS.living, desc: "Rear living lounge", top: "50%", left: "80%" },
-        KITCHEN: { id: "kitchen", label: "Kitchen", img: PHOTO_LINKS.kitchen, desc: "Island + residential feel", top: "50%", left: "55%" },
-        BEDROOM: { id: "bedroom", label: "Master Suite", img: PHOTO_LINKS.bedroom, desc: "Queen bed & slide-out space", top: "50%", left: "15%" },
-        BATHROOM: { id: "bathroom", label: "Bathroom", img: PHOTO_LINKS.bathroom, desc: "Pass-through bath", top: "50%", left: "35%" },
-        OUTDOOR: { id: "outdoor", label: "Outdoor Kitchen", img: PHOTO_LINKS.outdoor_kitchen, desc: "Grill + mini-fridge", top: "20%", left: "60%" },
-        THEATER: { id: "theater", label: "Theater Seats", img: PHOTO_LINKS.theater, desc: "Heat + massage seating", top: "70%", left: "75%" },
-        REAR: { id: "rear", label: "Rear Profile", img: PHOTO_LINKS.rear, desc: "Rear view & storage", top: "50%", left: "95%" }
+        EXTERIOR: { id: "exterior", label: "Exterior", img: PHOTO_LINKS.exterior, desc: "Power Awning & Entry", top: "80%", left: "20%" },
+        LIVING: { id: "living", label: "Living Room", img: PHOTO_LINKS.living, desc: "Rear Living Area", top: "50%", left: "80%" },
+        KITCHEN: { id: "kitchen", label: "Kitchen", img: PHOTO_LINKS.kitchen, desc: "Center Island Kitchen", top: "50%", left: "55%" },
+        BEDROOM: { id: "bedroom", label: "Master Suite", img: PHOTO_LINKS.bedroom, desc: "Front Queen Bed", top: "50%", left: "15%" },
+        BATHROOM: { id: "bathroom", label: "Bathroom", img: PHOTO_LINKS.bathroom, desc: "Pass-through Bath", top: "50%", left: "35%" },
+        OUTDOOR: { id: "outdoor", label: "Outdoor Kitchen", img: PHOTO_LINKS.outdoor_kitchen, desc: "Side Pull-out Kitchen", top: "20%", left: "60%" },
+        THEATER: { id: "theater", label: "Theater Seats", img: PHOTO_LINKS.theater, desc: "Massage & Heat Seating", top: "70%", left: "75%" },
+        REAR: { id: "rear", label: "Rear Profile", img: PHOTO_LINKS.rear, desc: "Rear View", top: "50%", left: "95%" }
       };
 
-      /**
-       * ===========================
-       * 3) MINI “AI” FAQ RESPONSES
-       * ===========================
-       * (local keyword matching; not an external AI call)
-       */
       const AI_BRAIN = [
         {
           keywords: ["weight", "heavy", "tow", "truck", "hitch", "lbs"],
           response:
-            "Towing overview for the Rockwood 8328BS:\n• Dry Weight (UVW): ~9,000 lbs\n• Hitch Weight: ~1,150 lbs\n• GVWR (Fully Loaded): ~11,000 lbs\n\nTip: A 3/4-ton truck (F-250/2500 class) is commonly recommended. Weight-distribution hitch required."
+            "Regarding towing the Rockwood 8328BS:\n• Dry Weight (UVW): ~9,000 lbs\n• Hitch Weight: ~1,150 lbs\n• Fully Loaded (GVWR): ~11,000 lbs\n\nAdvice: You'll generally need a 3/4 ton truck (F-250/2500 class). Weight-distribution hitch required."
         },
         {
           keywords: ["length", "long", "size", "dimension", "height", "feet"],
           response:
-            "Dimensions:\n• Total Length: 35' 5\" (hitch to bumper)\n• Height: ~13' (with A/C)\nAlways confirm bridge/overhang clearance."
+            "Dimensions:\n• Total Length: 35' 5\" (hitch to bumper)\n• Height: ~13' (with A/C)\nAlways check bridge clearances!"
         },
         {
           keywords: ["sleep", "bed", "people", "capacity", "guest"],
           response:
-            "Sleeping capacity:\n• Primary: Queen bed in the master suite\n• Guests: Sofa converts for additional sleeping\nBest for 2 adults, with occasional guests."
+            "Sleeping:\n• Master: Queen bed in the suite\n• Guests: Sofa converts for additional sleeping\nBest for 2 adults, with occasional guests."
         },
         {
           keywords: ["tank", "water", "capacity", "fresh", "grey", "black", "gallon"],
@@ -121,12 +117,12 @@
         {
           keywords: ["slide", "room", "out", "width"],
           response:
-            "Slide-outs:\n• 3 slide-outs for maximum space\nEnsure your campsite has enough room for slide clearance."
+            "Slide-outs:\n• 3 slide-outs for maximum space\nMake sure your campsite has enough clearance."
         },
         {
           keywords: ["kitchen", "fridge", "cook", "stove", "oven"],
           response:
-            "Kitchen highlights:\n• Island layout\n• Large fridge\n• 3-burner stove + oven + microwave\n• Outdoor kitchen: grill & mini-fridge"
+            "Kitchen highlights:\n• Island layout\n• Large fridge\n• 3-burner stove + oven + microwave\n• Outdoor kitchen: grill + mini-fridge"
         },
         {
           keywords: ["ac", "air", "cool", "heat", "furnace", "temp"],
@@ -136,21 +132,23 @@
         {
           keywords: ["power", "amp", "generator", "electric"],
           response:
-            "Electrical:\n• 50-amp service\n30-amp adapter may work with reduced usage (not both A/C units simultaneously)."
+            "Electrical:\n• 50-amp service\n30-amp adapter may work with reduced usage (not both A/C simultaneously)."
         },
         {
           keywords: ["price", "cost", "rate", "night", "per night"],
           response:
-            "Pricing varies by dates/season.\nTap “Request Booking” to check availability and receive a quote."
+            "Pricing varies by dates/season.\nTap “Book Now” or “Request Booking” to check availability and get a quote."
         }
       ];
 
       const DEFAULT_AI_RESPONSE =
-        "Hi! I’m Elena & Larry’s RV assistant.\nAsk me about towing, dimensions, tanks, slide-outs, power, or amenities.";
+        "Hi! I’m Elena & Larry’s assistant.\nAsk me about towing, dimensions, tanks, slide-outs, power, or amenities.";
+
+      const IMAGES = Object.values(ZONES).map(z => ({ src: z.img, alt: z.desc }));
 
       /**
        * ===========================
-       * 4) LUCIDE HELPERS
+       * 3) LUCIDE: Icon + Refresh
        * ===========================
        */
       function Icon({ name, size = 18, className = "" }) {
@@ -163,19 +161,26 @@
         );
       }
 
+      // ✅ 這個版本可以確保每次 render 後 icons 都會被重新 create（修掉「圖示不更新/不見」）
       function useLucideRefresh(deps = []) {
         useEffect(() => {
           if (window.lucide && typeof window.lucide.createIcons === "function") {
             window.lucide.createIcons();
           }
-          // We intentionally allow deps injection for re-render timing.
           // eslint-disable-next-line react-hooks/exhaustive-deps
         }, deps);
+
+        // 也跑一次「每次 render 後」
+        useEffect(() => {
+          if (window.lucide && typeof window.lucide.createIcons === "function") {
+            window.lucide.createIcons();
+          }
+        });
       }
 
       /**
        * ===========================
-       * 5) UI PRIMITIVES
+       * 4) UI Primitives
        * ===========================
        */
       const SmartImage = ({ src, alt, className = "", style = {}, ...props }) => {
@@ -203,333 +208,14 @@
         );
       };
 
-      const Pill = ({ icon, children }) => (
-        <span className="inline-flex items-center gap-2 text-xs font-bold tracking-widest uppercase text-emerald-700 bg-emerald-50 border border-emerald-100 px-3 py-2 rounded-full">
-          <Icon name={icon} size={14} />
-          {children}
-        </span>
-      );
-
-      const SectionTitle = ({ icon, title, subtitle }) => {
-        useLucideRefresh([title, subtitle]);
-        return (
-          <div className="flex items-end justify-between gap-4">
-            <div>
-              <h2 className="text-2xl md:text-3xl font-black text-gray-900 flex items-center gap-2">
-                <Icon name={icon} size={18} className="text-emerald-700" />
-                {title}
-              </h2>
-              {subtitle && <p className="text-gray-600 mt-2">{subtitle}</p>}
-            </div>
-          </div>
-        );
-      };
-
       /**
        * ===========================
-       * 6) COMPONENTS
-       * ===========================
-       */
-      const TopBar = () => {
-        useLucideRefresh([]);
-        return (
-          <header className="sticky top-0 z-40 bg-white/80 backdrop-blur border-b border-gray-200">
-            <div className="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <div className="w-9 h-9 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 flex items-center justify-center shadow-sm">
-                  <Icon name="caravan" size={20} className="text-white" />
-                </div>
-                <div>
-                  <div className="font-extrabold text-gray-900 leading-tight">Elena & Larry RV Rental</div>
-                  <div className="text-xs text-gray-500">{RV_INFO.name} • {CONTACT.locationShort}</div>
-                </div>
-              </div>
-
-              <a
-                href="#request"
-                className="inline-flex items-center gap-2 bg-emerald-600 text-white px-4 py-2 rounded-full shadow-sm hover:bg-emerald-700 transition"
-              >
-                <Icon name="calendar-check" size={16} />
-                Request Booking
-              </a>
-            </div>
-          </header>
-        );
-      };
-
-      const Hero = ({ activeZone, onQuickJump }) => {
-        useLucideRefresh([activeZone?.id]);
-        return (
-          <section className="max-w-6xl mx-auto px-4 pt-8 pb-10">
-            <div className="grid md:grid-cols-2 gap-6 items-center">
-              <div className="animate-fade-in-up">
-                <Pill icon="sparkles">{RV_INFO.badge}</Pill>
-                <h1 className="text-3xl md:text-5xl font-black text-gray-900 mt-4 leading-tight">
-                  Explore the {RV_INFO.name}
-                </h1>
-                <p className="text-gray-600 mt-4 text-base md:text-lg">
-                  {RV_INFO.tagline}. Click hotspots on the map to explore photos, then request booking when you’re ready.
-                </p>
-
-                <div className="flex flex-wrap gap-3 mt-6">
-                  <button
-                    onClick={() => onQuickJump("living")}
-                    className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-gray-200 bg-white hover:border-emerald-300 transition"
-                  >
-                    <Icon name="sofa" size={16} className="text-emerald-700" />
-                    Living Room
-                  </button>
-                  <button
-                    onClick={() => onQuickJump("kitchen")}
-                    className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-gray-200 bg-white hover:border-emerald-300 transition"
-                  >
-                    <Icon name="utensils" size={16} className="text-emerald-700" />
-                    Kitchen
-                  </button>
-                  <button
-                    onClick={() => onQuickJump("bedroom")}
-                    className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-gray-200 bg-white hover:border-emerald-300 transition"
-                  >
-                    <Icon name="bed-double" size={16} className="text-emerald-700" />
-                    Master Suite
-                  </button>
-                </div>
-
-                <div className="mt-7 grid sm:grid-cols-2 gap-3">
-                  <div className="bg-white border border-gray-200 rounded-2xl p-4">
-                    <div className="flex items-center gap-2 text-sm font-bold text-gray-900">
-                      <Icon name="shield-check" size={16} className="text-emerald-700" />
-                      Clean & Ready
-                    </div>
-                    <div className="text-sm text-gray-600 mt-1">Professionally cleaned and stocked for your trip.</div>
-                  </div>
-                  <div className="bg-white border border-gray-200 rounded-2xl p-4">
-                    <div className="flex items-center gap-2 text-sm font-bold text-gray-900">
-                      <Icon name="sparkle" size={16} className="text-emerald-700" />
-                      Comfort First
-                    </div>
-                    <div className="text-sm text-gray-600 mt-1">Cozy rear living layout + premium seating.</div>
-                  </div>
-                </div>
-              </div>
-
-              <div className="animate-fade-in-up">
-                <div className="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
-                  <div className="h-72 md:h-96">
-                    <SmartImage src={activeZone.img} alt={activeZone.desc} className="w-full h-full" />
-                  </div>
-                  <div className="p-4 md:p-5 flex items-start justify-between gap-4">
-                    <div>
-                      <div className="text-sm font-bold text-gray-900 flex items-center gap-2">
-                        <Icon name="pin" size={16} className="text-emerald-700" />
-                        {activeZone.label}
-                      </div>
-                      <div className="text-sm text-gray-600 mt-1">{activeZone.desc}</div>
-                    </div>
-                    <a
-                      href="#floorplan"
-                      className="shrink-0 inline-flex items-center gap-2 px-4 py-2 rounded-full bg-emerald-600 text-white hover:bg-emerald-700 transition"
-                    >
-                      Map
-                      <Icon name="arrow-right" size={16} />
-                    </a>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </section>
-        );
-      };
-
-      const FloorPlanMap = ({ activeZoneId, onSelect }) => {
-        useLucideRefresh([activeZoneId]);
-
-        const zones = Object.values(ZONES);
-
-        return (
-          <section id="floorplan" className="px-4 pb-10">
-            <div className="w-full max-w-6xl mx-auto">
-              <div className="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
-                <div className="p-5 md:p-6 flex items-center justify-between">
-                  <div>
-                    <h3 className="text-lg md:text-xl font-bold text-gray-900 flex items-center gap-2">
-                      <Icon name="map" size={18} className="text-emerald-700" />
-                      Interactive Overhead Map
-                    </h3>
-                    <p className="text-sm text-gray-500 mt-1">Tap a hotspot to view photos from that area.</p>
-                  </div>
-                  <div className="text-xs font-bold text-gray-400 uppercase tracking-widest">
-                    Front → Rear
-                  </div>
-                </div>
-
-                <div className="relative">
-                  <div className="aspect-[14/5] bg-gray-100">
-                    <SmartImage
-                      src={PHOTO_LINKS.floorplan}
-                      alt="Overhead floorplan"
-                      className="w-full h-full"
-                    />
-                  </div>
-
-                  {/* Hotspots */}
-                  {zones.map((z) => {
-                    const active = z.id === activeZoneId;
-                    return (
-                      <button
-                        key={z.id}
-                        onClick={() => onSelect(z.id)}
-                        className={`absolute -translate-x-1/2 -translate-y-1/2 rounded-full border shadow-sm transition-all ${
-                          active
-                            ? "bg-emerald-600 border-emerald-600 scale-110"
-                            : "bg-white border-gray-300 hover:scale-110"
-                        }`}
-                        style={{ top: z.top, left: z.left }}
-                        aria-label={z.label}
-                        title={z.label}
-                      >
-                        <span className="block w-4 h-4 md:w-5 md:h-5 rounded-full" />
-                      </button>
-                    );
-                  })}
-                </div>
-
-                <div className="p-4 md:p-5 border-t border-gray-100 bg-gray-50">
-                  <div className="flex flex-wrap gap-2">
-                    {zones.map((z) => {
-                      const active = z.id === activeZoneId;
-                      return (
-                        <button
-                          key={z.id}
-                          onClick={() => onSelect(z.id)}
-                          className={`px-3 py-2 rounded-full text-sm border transition ${
-                            active
-                              ? "bg-emerald-600 text-white border-emerald-600"
-                              : "bg-white text-gray-700 border-gray-200 hover:border-emerald-300"
-                          }`}
-                        >
-                          {z.label}
-                        </button>
-                      );
-                    })}
-                  </div>
-                </div>
-              </div>
-            </div>
-          </section>
-        );
-      };
-
-      const GalleryCard = ({ title, desc, img }) => {
-        useLucideRefresh([title]);
-        return (
-          <div className="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden animate-fade-in-up">
-            <div className="h-48 md:h-56">
-              <SmartImage src={img} alt={title} className="w-full h-full" />
-            </div>
-            <div className="p-4 md:p-5">
-              <div className="flex items-center gap-2">
-                <Icon name="image" size={16} className="text-emerald-700" />
-                <h4 className="font-bold text-gray-900">{title}</h4>
-              </div>
-              <p className="text-sm text-gray-600 mt-2">{desc}</p>
-            </div>
-          </div>
-        );
-      };
-
-      const BookingSection = () => {
-        useLucideRefresh([]);
-        return (
-          <div id="request" className="mt-14 bg-white rounded-2xl border border-gray-200 shadow-sm p-6 md:p-8">
-            <h3 className="text-xl font-black text-gray-900 flex items-center gap-2">
-              <Icon name="calendar-check" size={18} className="text-emerald-700" />
-              Request Booking
-            </h3>
-            <p className="text-gray-600 mt-2">
-              Check availability and request your dates. Prefer texting or email? Use the options below.
-            </p>
-
-            <div className="mt-5 flex flex-wrap gap-3">
-              <a
-                href={CONTACT.bookingUrl}
-                target="_blank"
-                rel="noreferrer"
-                className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-emerald-600 text-white hover:bg-emerald-700 transition"
-              >
-                <Icon name="calendar-plus" size={16} />
-                Open Booking Link
-              </a>
-
-              <a
-                href={`mailto:${CONTACT.email}`}
-                className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-gray-200 bg-white hover:border-emerald-300 transition"
-              >
-                <Icon name="mail" size={16} className="text-emerald-700" />
-                Email
-              </a>
-
-              <a
-                href={`tel:${CONTACT.phoneE164}`}
-                className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-gray-200 bg-white hover:border-emerald-300 transition"
-              >
-                <Icon name="phone" size={16} className="text-emerald-700" />
-                Call {CONTACT.phoneDisplay}
-              </a>
-            </div>
-
-            <div className="mt-6 grid md:grid-cols-3 gap-3">
-              <div className="bg-gray-50 border border-gray-200 rounded-2xl p-4">
-                <div className="flex items-center gap-2 text-sm font-bold text-gray-900">
-                  <Icon name="clock" size={16} className="text-emerald-700" />
-                  Fast Response
-                </div>
-                <div className="text-sm text-gray-600 mt-1">Typically within the same day.</div>
-              </div>
-              <div className="bg-gray-50 border border-gray-200 rounded-2xl p-4">
-                <div className="flex items-center gap-2 text-sm font-bold text-gray-900">
-                  <Icon name="sparkles" size={16} className="text-emerald-700" />
-                  Trip Ready
-                </div>
-                <div className="text-sm text-gray-600 mt-1">Setup tips + walkthrough available.</div>
-              </div>
-              <div className="bg-gray-50 border border-gray-200 rounded-2xl p-4">
-                <div className="flex items-center gap-2 text-sm font-bold text-gray-900">
-                  <Icon name="map-pin" size={16} className="text-emerald-700" />
-                  Pickup Area
-                </div>
-                <div className="text-sm text-gray-600 mt-1">{CONTACT.locationShort}</div>
-              </div>
-            </div>
-          </div>
-        );
-      };
-
-      const Footer = () => {
-        useLucideRefresh([]);
-        return (
-          <footer className="border-t border-gray-200 bg-white">
-            <div className="max-w-6xl mx-auto px-4 py-8 text-sm text-gray-500 flex flex-wrap items-center justify-between gap-3">
-              <div>© {new Date().getFullYear()} Elena & Larry RV Rental</div>
-              <div className="flex items-center gap-2">
-                <Icon name="shield-check" size={16} className="text-emerald-700" />
-                Hosted on GitHub Pages
-              </div>
-            </div>
-          </footer>
-        );
-      };
-
-      /**
-       * ===========================
-       * 7) AI CHAT WIDGET (LOCAL)
+       * 5) AI Chat Widget
        * ===========================
        */
       const AIChatWidget = () => {
         const [isOpen, setIsOpen] = useState(false);
-        const [messages, setMessages] = useState([
-          { role: "bot", text: DEFAULT_AI_RESPONSE }
-        ]);
+        const [messages, setMessages] = useState([{ role: "bot", text: DEFAULT_AI_RESPONSE }]);
         const [input, setInput] = useState("");
         const [isTyping, setIsTyping] = useState(false);
         const chatEndRef = useRef(null);
@@ -648,7 +334,7 @@
               aria-label="Toggle chat"
             >
               <Icon name="message-square" size={24} className="group-hover:animate-pulse" />
-              <span className={`${isOpen ? "hidden" : "block"} font-medium pr-1`}>Ask</span>
+              <span className={`${isOpen ? "hidden" : "block"} font-medium pr-1`}>Ask AI Assistant</span>
             </button>
           </div>
         );
@@ -656,55 +342,552 @@
 
       /**
        * ===========================
-       * 8) MAIN APP
+       * 6) Virtual Tour (Floorplan + Pan)
+       * ===========================
+       */
+      const FloorPlanMap = ({ activeZoneId, onZoneClick }) => {
+        useLucideRefresh([activeZoneId]);
+
+        return (
+          <div className="w-full max-w-2xl mx-auto p-4 bg-white rounded-xl shadow-inner border border-gray-200">
+            <div className="flex justify-between items-center mb-4">
+              <span className="text-xs font-bold text-gray-400 uppercase tracking-widest">Front</span>
+              <span className="text-xs font-bold text-emerald-600 uppercase tracking-widest flex items-center gap-1">
+                <Icon name="map" size={14} /> Interactive Overhead Map
+              </span>
+              <span className="text-xs font-bold text-gray-400 uppercase tracking-widest">Rear</span>
+            </div>
+
+            <div className="relative w-full aspect-[3/1] bg-gray-100 rounded-lg overflow-hidden border border-gray-200 group">
+              <SmartImage
+                src={PHOTO_LINKS.floorplan}
+                alt="Overhead Floor Plan"
+                className="w-full h-full object-contain opacity-90 group-hover:opacity-100 transition-opacity"
+              />
+
+              {String(PHOTO_LINKS.floorplan).includes("placehold") && (
+                <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                  <span className="bg-black/50 text-white px-4 py-2 rounded text-sm backdrop-blur-sm">
+                    Paste your floorplan link in PHOTO_LINKS.floorplan
+                  </span>
+                </div>
+              )}
+
+              <div className="absolute inset-0">
+                {Object.values(ZONES).map((zone) => {
+                  if (!zone.top || !zone.left) return null;
+                  const isActive = activeZoneId === zone.id;
+
+                  return (
+                    <button
+                      key={zone.id}
+                      onClick={() => onZoneClick(zone)}
+                      style={{ top: zone.top, left: zone.left }}
+                      className="absolute -translate-x-1/2 -translate-y-1/2 flex flex-col items-center justify-center transition-all duration-300 z-10 group/btn"
+                      aria-label={zone.label}
+                      title={zone.label}
+                    >
+                      <span className={`absolute w-full h-full rounded-full bg-emerald-400 opacity-75 animate-ping ${isActive ? "block" : "hidden group-hover/btn:block"}`}></span>
+                      <div className={`relative w-6 h-6 rounded-full border-2 shadow-md flex items-center justify-center transition-colors ${isActive ? "bg-emerald-600 border-white scale-110" : "bg-white/90 border-emerald-600 hover:bg-emerald-600"}`}>
+                        <div className={`w-2 h-2 rounded-full ${isActive ? "bg-white" : "bg-emerald-600 group-hover/btn:bg-white"}`}></div>
+                      </div>
+                      <span className={`absolute -top-8 bg-gray-900/90 text-white text-[10px] font-bold px-2 py-1 rounded shadow-lg backdrop-blur-sm whitespace-nowrap transition-all ${isActive ? "opacity-100 translate-y-0" : "opacity-0 translate-y-2 group-hover/btn:opacity-100 group-hover/btn:translate-y-0"}`}>
+                        {zone.label}
+                      </span>
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+
+            <div className="mt-4 flex flex-wrap gap-2 justify-center">
+              {Object.values(ZONES).map((zone) => (
+                <button
+                  key={zone.id}
+                  onClick={() => onZoneClick(zone)}
+                  className={`px-3 py-1.5 rounded-full text-xs font-semibold border transition-all flex items-center gap-1.5 ${
+                    activeZoneId === zone.id
+                      ? "bg-emerald-600 text-white border-emerald-600 shadow-sm"
+                      : "bg-white text-gray-600 border-gray-200 hover:border-emerald-300 hover:bg-emerald-50"
+                  }`}
+                >
+                  {zone.id === "kitchen" || zone.id === "outdoor" ? <Icon name="zap" size={10} /> : null}
+                  {zone.id === "bedroom" ? <Icon name="bed-double" size={10} /> : null}
+                  {zone.label}
+                </button>
+              ))}
+            </div>
+          </div>
+        );
+      };
+
+      const PanZoomViewer = ({ image, label }) => {
+        const [position, setPosition] = useState({ x: 0, y: 0 });
+        const [isDragging, setIsDragging] = useState(false);
+        const [startPos, setStartPos] = useState({ x: 0, y: 0 });
+
+        useLucideRefresh([label, image]);
+
+        useEffect(() => {
+          setPosition({ x: 0, y: 0 });
+        }, [image]);
+
+        const clamp = (v, min, max) => Math.max(min, Math.min(max, v));
+
+        const handleMouseDown = (e) => {
+          setIsDragging(true);
+          setStartPos({ x: e.clientX - position.x, y: e.clientY - position.y });
+        };
+
+        const handleMouseMove = (e) => {
+          if (!isDragging) return;
+          const limit = 200;
+          const newX = clamp(e.clientX - startPos.x, -limit, limit);
+          const newY = clamp(e.clientY - startPos.y, -limit, limit);
+          setPosition({ x: newX, y: newY });
+        };
+
+        const endDrag = () => setIsDragging(false);
+
+        return (
+          <div className="relative w-full h-[500px] overflow-hidden rounded-xl shadow-2xl bg-gray-100 group cursor-grab active:cursor-grabbing border-4 border-white">
+            <div className="absolute top-4 left-4 z-10 bg-black/60 text-white px-3 py-1 rounded-full text-sm font-medium flex items-center gap-2 backdrop-blur-sm pointer-events-none">
+              <Icon name="mouse-pointer-2" size={14} /> Drag to pan photo
+            </div>
+
+            <div
+              className="w-full h-full relative flex items-center justify-center"
+              onMouseDown={handleMouseDown}
+              onMouseMove={handleMouseMove}
+              onMouseUp={endDrag}
+              onMouseLeave={endDrag}
+              onTouchStart={(e) => {
+                const t = e.touches[0];
+                setIsDragging(true);
+                setStartPos({ x: t.clientX - position.x, y: t.clientY - position.y });
+              }}
+              onTouchMove={(e) => {
+                if (!isDragging) return;
+                const t = e.touches[0];
+                const limit = 200;
+                const newX = clamp(t.clientX - startPos.x, -limit, limit);
+                const newY = clamp(t.clientY - startPos.y, -limit, limit);
+                setPosition({ x: newX, y: newY });
+              }}
+              onTouchEnd={endDrag}
+            >
+              <SmartImage
+                src={image}
+                alt={label}
+                className="w-full h-full object-cover transition-transform duration-300 ease-out"
+                style={{ transform: `translate(${position.x}px, ${position.y}px) scale(1.2)` }}
+              />
+            </div>
+
+            <div className="absolute bottom-0 inset-x-0 bg-gradient-to-t from-black/80 to-transparent p-6 pointer-events-none">
+              <h3 className="text-2xl font-bold text-white mb-1">{label}</h3>
+              <p className="text-white/80 text-sm flex items-center gap-1">
+                <Icon name="maximize" size={14} /> Detail View
+              </p>
+            </div>
+          </div>
+        );
+      };
+
+      const VirtualTourSection = () => {
+        const [currentZone, setCurrentZone] = useState(ZONES.LIVING);
+        useLucideRefresh([currentZone.id]);
+
+        return (
+          <div id="tour" className="py-24 bg-gray-50">
+            <div className="max-w-7xl mx-auto px-4">
+              <div className="text-center mb-12">
+                <span className="text-emerald-600 font-bold tracking-wider uppercase text-sm">Interactive Configuration</span>
+                <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mt-2">Explore the Floor Plan</h2>
+                <p className="text-gray-600 mt-4 max-w-2xl mx-auto">
+                  Click on any area in the overhead map to see the actual room details.
+                  <br />Check out the spacious living area and the convenient outdoor kitchen!
+                </p>
+
+                <div className="mt-6 p-4 bg-emerald-50 rounded-lg border border-emerald-100 max-w-2xl mx-auto text-left flex gap-3">
+                  <div className="bg-white p-2 rounded-full shadow-sm h-fit">
+                    <Icon name="external-link" size={20} className="text-emerald-600" />
+                  </div>
+                  <div>
+                    <h4 className="font-bold text-emerald-900 text-sm">Setup Instructions</h4>
+                    <p className="text-emerald-700 text-xs mt-1 leading-relaxed">
+                      To see your custom overhead view:
+                      1) Upload your screenshot to Imgur (or any image host),
+                      2) Copy the direct link (.jpg/.png),
+                      3) Paste it into <span className="font-bold">PHOTO_LINKS.floorplan</span>.
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
+                <div className="lg:col-span-1 space-y-6">
+                  <FloorPlanMap
+                    activeZoneId={currentZone.id}
+                    onZoneClick={setCurrentZone}
+                  />
+
+                  <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
+                    <h4 className="font-bold text-gray-900 mb-2">
+                      Selected Area: <span className="text-emerald-600">{currentZone.label}</span>
+                    </h4>
+                    <p className="text-sm text-gray-600 leading-relaxed mb-4">
+                      {currentZone.desc}.
+                      {currentZone.id === "living" && " This area feels like a real apartment with the opposing slides open."}
+                      {currentZone.id === "outdoor" && " Perfect for cooking outside without heating up the camper!"}
+                    </p>
+                    <div className="flex items-center gap-2 text-xs text-gray-500 font-medium uppercase border-t pt-3 mt-2">
+                      <Icon name="zoom-in" size={14} />
+                      Photo View Active
+                    </div>
+                  </div>
+                </div>
+
+                <div className="lg:col-span-2">
+                  <PanZoomViewer image={currentZone.img} label={currentZone.label} />
+                </div>
+              </div>
+            </div>
+          </div>
+        );
+      };
+
+      /**
+       * ===========================
+       * 7) ✅ What's Included / Amenities（你要的區塊）
+       * ===========================
+       */
+      const AmenitiesSection = () => {
+        useLucideRefresh([]);
+
+        const includedItems = [
+          { icon: "bed-double", text: "Bedding, Quilts & Pillows" },
+          { icon: "package", text: "Cozy Sofa Cushions" },
+          { icon: "sparkles", text: "Basic Cleaning Supplies" },
+          { icon: "utensils", text: "Dishes, Cups, Pots & Pans" },
+          { icon: "chef-hat", text: "Oven, Gas Stove, Air Fryer" },
+          { icon: "zap", text: "2x Microwaves, 2x Fridges" },
+          { icon: "tv", text: "TV & Premium Audio System" },
+          { icon: "flame", text: "Gas & Electric Heating" },
+          { icon: "wind", text: "Ducted A/C & Windows" },
+          { icon: "bath", text: "2 Large Bath Towels" },
+        ];
+
+        const excludedItems = [
+          { text: "Kitchen Knives (Safety)" },
+          { text: "Personal Toiletries (Shampoo, Soap, etc.)" }
+        ];
+
+        return (
+          <div className="bg-white py-20 border-t border-gray-100">
+            <div className="max-w-7xl mx-auto px-4 md:px-8">
+              <div className="text-center mb-12">
+                <h2 className="text-3xl font-bold text-gray-900">What's Included?</h2>
+                <p className="text-gray-500 mt-2">We provide almost everything you need for a luxury stay.</p>
+              </div>
+
+              <div className="grid md:grid-cols-3 gap-8 md:gap-12">
+                <div className="md:col-span-2 bg-emerald-50/50 rounded-2xl p-8 border border-emerald-100">
+                  <h3 className="text-xl font-bold text-emerald-800 mb-6 flex items-center gap-2">
+                    <Icon name="check-circle" size={20} className="text-emerald-600" />
+                    Included Amenities
+                  </h3>
+
+                  <div className="grid sm:grid-cols-2 gap-y-4 gap-x-8">
+                    {includedItems.map((item, idx) => (
+                      <div key={idx} className="flex items-center gap-3 text-gray-700 font-medium">
+                        <div className="p-2 bg-white rounded-lg text-emerald-600 shadow-sm border border-emerald-100">
+                          <Icon name={item.icon} size={18} />
+                        </div>
+                        {item.text}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="bg-gray-50 rounded-2xl p-8 border border-gray-100 h-fit">
+                  <h3 className="text-xl font-bold text-gray-800 mb-6 flex items-center gap-2">
+                    <Icon name="circle-off" size={20} className="text-gray-400" />
+                    Not Included
+                  </h3>
+
+                  <ul className="space-y-4">
+                    {excludedItems.map((item, idx) => (
+                      <li key={idx} className="flex items-start gap-3 text-gray-600">
+                        <Icon name="x" size={20} className="text-red-400 mt-0.5" />
+                        <span>{item.text}</span>
+                      </li>
+                    ))}
+                  </ul>
+
+                  <div className="mt-8 pt-6 border-t border-gray-200 text-xs text-gray-500 leading-relaxed">
+                    * Please remember to bring your favorite cooking knives and personal hygiene products. All other cookware is provided!
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        );
+      };
+
+      /**
+       * ===========================
+       * 8) Navigation + Hero + Main Page
+       * ===========================
+       */
+      const NavBar = ({ scrolled }) => {
+        useLucideRefresh([scrolled]);
+
+        return (
+          <nav className={`fixed top-0 w-full z-40 transition-all duration-300 ${scrolled ? "bg-white shadow-md py-3" : "bg-transparent py-5"}`}>
+            <div className="max-w-7xl mx-auto px-4 md:px-8 flex justify-between items-center">
+              <div className={`text-xl md:text-2xl font-bold tracking-tight ${scrolled ? "text-emerald-900" : "text-white"}`}>
+                {RV_INFO.brandTitle}<span className="text-emerald-500">{RV_INFO.brandAccent}</span>
+              </div>
+
+              <div className="hidden md:flex gap-8 items-center">
+                <a href="#tour" className={`text-sm font-medium hover:text-emerald-500 transition-colors ${scrolled ? "text-gray-600" : "text-white/90"}`}>Floor Plan</a>
+                <a href="#features" className={`text-sm font-medium hover:text-emerald-500 transition-colors ${scrolled ? "text-gray-600" : "text-white/90"}`}>Features</a>
+                <a href="#specs" className={`text-sm font-medium hover:text-emerald-500 transition-colors ${scrolled ? "text-gray-600" : "text-white/90"}`}>Specs</a>
+
+                <a
+                  href={CONTACT.bookingUrl}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="bg-emerald-600 text-white px-5 py-2 rounded-full text-sm font-medium hover:bg-emerald-700 transition-colors shadow-lg inline-flex items-center gap-2"
+                >
+                  <Icon name="calendar-check" size={16} />
+                  Book Now
+                </a>
+              </div>
+
+              <button className={`md:hidden ${scrolled ? "text-gray-800" : "text-white"}`} aria-label="menu">
+                <Icon name="menu" size={22} />
+              </button>
+            </div>
+          </nav>
+        );
+      };
+
+      const Hero = ({ images }) => {
+        const [currentHeroIndex, setCurrentHeroIndex] = useState(0);
+        useLucideRefresh([currentHeroIndex]);
+
+        useEffect(() => {
+          const interval = setInterval(() => {
+            setCurrentHeroIndex((prev) => (prev + 1) % images.length);
+          }, 5000);
+          return () => clearInterval(interval);
+        }, [images.length]);
+
+        return (
+          <div className="relative h-screen min-h-[600px] flex items-center justify-center text-center px-4 overflow-hidden bg-gray-900">
+            {images.map((img, index) => (
+              <div
+                key={index}
+                className={`absolute inset-0 z-0 transition-opacity duration-1000 ease-in-out ${index === currentHeroIndex ? "opacity-100" : "opacity-0"}`}
+              >
+                <SmartImage src={img.src} alt="Hero Background" className="w-full h-full object-cover opacity-60" />
+                <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-transparent to-gray-900/90" />
+              </div>
+            ))}
+
+            <div className="relative z-10 max-w-4xl mx-auto">
+              <div className="inline-block bg-emerald-600/20 backdrop-blur-sm border border-emerald-500/30 text-emerald-100 px-4 py-1 rounded-full text-sm font-medium mb-6 animate-fade-in-up">
+                {RV_INFO.yearModel}
+              </div>
+
+              <h1 className="text-5xl md:text-7xl font-bold text-white mb-6 leading-tight tracking-tight">
+                {RV_INFO.heroTitleLine1} <br /> {RV_INFO.heroTitleLine2}
+              </h1>
+
+              <p className="text-xl md:text-2xl text-gray-200 mb-10 max-w-2xl mx-auto font-light">
+                {RV_INFO.heroSubtitle}
+              </p>
+
+              <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                <a
+                  href="#tour"
+                  className="bg-white text-gray-900 px-8 py-4 rounded-full font-semibold hover:bg-gray-100 transition-colors flex items-center justify-center gap-2"
+                >
+                  <Icon name="map" size={20} />
+                  View Floor Plan
+                </a>
+
+                <a
+                  href={CONTACT.bookingUrl}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="bg-emerald-600 text-white px-8 py-4 rounded-full font-semibold hover:bg-emerald-700 transition-colors flex items-center justify-center gap-2 shadow-emerald-900/20 shadow-xl"
+                >
+                  <Icon name="calendar" size={20} />
+                  Check Availability
+                </a>
+              </div>
+            </div>
+          </div>
+        );
+      };
+
+      const SpecsGrid = () => {
+        useLucideRefresh([]);
+        return (
+          <div id="specs" className="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 -mt-32 relative z-20 mb-20">
+            <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 flex flex-col items-center text-center hover:shadow-md transition-shadow">
+              <div className="p-3 bg-emerald-50 text-emerald-600 rounded-full mb-3"><Icon name="users" size={24} /></div>
+              <h3 className="text-sm font-medium text-gray-500 uppercase">Capacity</h3>
+              <p className="text-lg font-bold text-gray-900">2 People</p>
+            </div>
+
+            <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 flex flex-col items-center text-center hover:shadow-md transition-shadow">
+              <div className="p-3 bg-emerald-50 text-emerald-600 rounded-full mb-3"><Icon name="bed-double" size={24} /></div>
+              <h3 className="text-sm font-medium text-gray-500 uppercase">Master</h3>
+              <p className="text-lg font-bold text-gray-900">Queen Slide</p>
+            </div>
+
+            <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 flex flex-col items-center text-center hover:shadow-md transition-shadow">
+              <div className="p-3 bg-emerald-50 text-emerald-600 rounded-full mb-3"><Icon name="maximize" size={24} /></div>
+              <h3 className="text-sm font-medium text-gray-500 uppercase">Space</h3>
+              <p className="text-lg font-bold text-gray-900">3 Slide-outs</p>
+            </div>
+
+            <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 flex flex-col items-center text-center hover:shadow-md transition-shadow">
+              <div className="p-3 bg-emerald-50 text-emerald-600 rounded-full mb-3"><Icon name="wind" size={24} /></div>
+              <h3 className="text-sm font-medium text-gray-500 uppercase">Climate</h3>
+              <p className="text-lg font-bold text-gray-900">2x A/C Units</p>
+            </div>
+          </div>
+        );
+      };
+
+      const FeaturesAndContact = () => {
+        useLucideRefresh([]);
+
+        const bullets = [
+          "Fully stocked indoor kitchen with island",
+          "Outdoor kitchen with grill and fridge",
+          "Spacious bathroom with glass shower",
+          "WiFi Ranger booster for staying connected"
+        ];
+
+        return (
+          <div className="max-w-7xl mx-auto px-4 md:px-8 py-20">
+            <div id="features" className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center mb-24">
+              <div>
+                <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-6">Home is where you park it.</h2>
+                <p className="text-lg text-gray-600 leading-relaxed mb-6">
+                  Our Rockwood 8328BS isn't just a trailer; it's a mobile luxury apartment.
+                  With three slide-outs, it opens up to provide a massive living area with a kitchen island, fireplace, and theater seating.
+                </p>
+
+                <ul className="space-y-4">
+                  {bullets.map((item, i) => (
+                    <li key={i} className="flex items-center gap-3 text-gray-700">
+                      <Icon name="check-circle" size={20} className="text-emerald-500" />
+                      <span>{item}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+
+              <div className="relative rounded-2xl overflow-hidden shadow-2xl rotate-1 hover:rotate-0 transition-transform duration-500 aspect-video">
+                <SmartImage src={PHOTO_LINKS.kitchen} alt="Kitchen Island" className="w-full h-full object-cover" />
+              </div>
+            </div>
+
+            <div id="contact" className="bg-emerald-50 rounded-3xl p-8 md:p-16 text-center">
+              <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-6">Ready to hit the road?</h2>
+              <p className="text-xl text-gray-600 mb-10 max-w-2xl mx-auto">
+                Book Elena & Larry's Rockwood 8328BS for your next adventure. Dates are filling up fast for the upcoming season!
+              </p>
+
+              <div className="flex flex-col sm:flex-row justify-center gap-4">
+                <a
+                  href={CONTACT.bookingUrl}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="bg-emerald-600 text-white px-8 py-4 rounded-full font-bold hover:bg-emerald-700 transition-colors shadow-lg inline-flex items-center justify-center gap-2"
+                >
+                  <Icon name="calendar-plus" size={20} />
+                  Request Booking
+                </a>
+
+                <a
+                  href={`mailto:${CONTACT.email}`}
+                  className="bg-white text-emerald-800 border border-emerald-200 px-8 py-4 rounded-full font-bold hover:bg-emerald-50 transition-colors inline-flex items-center justify-center gap-2"
+                >
+                  <Icon name="mail" size={20} />
+                  Email Us
+                </a>
+              </div>
+
+              <div className="mt-6 text-sm text-emerald-900/70 flex flex-col sm:flex-row gap-3 justify-center">
+                <a className="inline-flex items-center gap-2 justify-center" href={`tel:${CONTACT.phoneE164}`}>
+                  <Icon name="phone" size={16} />
+                  {CONTACT.phoneDisplay}
+                </a>
+                <span className="hidden sm:inline">•</span>
+                <span className="inline-flex items-center gap-2 justify-center">
+                  <Icon name="map-pin" size={16} />
+                  {CONTACT.locationShort}
+                </span>
+              </div>
+            </div>
+          </div>
+        );
+      };
+
+      const Footer = () => {
+        useLucideRefresh([]);
+        return (
+          <footer className="bg-gray-900 text-gray-400 py-12 text-center">
+            <div className="max-w-7xl mx-auto px-4">
+              <p className="mb-4 text-emerald-500 font-semibold">Elena & Larry's Rockwood Rentals</p>
+              <p className="text-sm">© {new Date().getFullYear()} All Rights Reserved. Not affiliated with Forest River RV.</p>
+            </div>
+          </footer>
+        );
+      };
+
+      /**
+       * ===========================
+       * 9) App
        * ===========================
        */
       const App = () => {
-        const zoneList = useMemo(() => Object.values(ZONES), []);
-        const [activeZoneId, setActiveZoneId] = useState(zoneList[0].id);
+        const [scrolled, setScrolled] = useState(false);
 
-        const activeZone = zoneList.find(z => z.id === activeZoneId) || zoneList[0];
-
-        useLucideRefresh([activeZoneId]);
-
-        const handleQuickJump = useCallback((id) => {
-          if (!id) return;
-          setActiveZoneId(id);
-          // scroll to hero image (optional)
-          window.scrollTo({ top: 0, behavior: "smooth" });
+        useEffect(() => {
+          const handleScroll = () => setScrolled(window.scrollY > 50);
+          window.addEventListener("scroll", handleScroll, { passive: true });
+          return () => window.removeEventListener("scroll", handleScroll);
         }, []);
 
+        const heroImages = IMAGES;
+
         return (
-          <div className="min-h-screen">
-            <TopBar />
-            <Hero activeZone={activeZone} onQuickJump={handleQuickJump} />
-            <FloorPlanMap activeZoneId={activeZoneId} onSelect={setActiveZoneId} />
+          <div className="font-sans text-gray-900 bg-gray-50">
+            <NavBar scrolled={scrolled} />
+            <Hero images={heroImages} />
 
-            <section className="max-w-6xl mx-auto px-4 pb-16">
-              <SectionTitle
-                icon="images"
-                title="Photo Highlights"
-                subtitle="A quick look at key areas. Tap a card to focus that zone."
-              />
+            <div className="max-w-7xl mx-auto px-4 md:px-8 py-10">
+              <SpecsGrid />
+            </div>
 
-              <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5 mt-6">
-                {zoneList.map((z) => (
-                  <button key={z.id} onClick={() => setActiveZoneId(z.id)} className="text-left">
-                    <GalleryCard title={z.label} desc={z.desc} img={z.img} />
-                  </button>
-                ))}
-              </div>
-
-              <BookingSection />
-            </section>
-
+            <VirtualTourSection />
+            <AmenitiesSection />
+            <FeaturesAndContact />
             <Footer />
             <AIChatWidget />
           </div>
         );
       };
 
-      // Mount React to #root
       const root = ReactDOM.createRoot(document.getElementById("root"));
       root.render(<App />);
     </script>
